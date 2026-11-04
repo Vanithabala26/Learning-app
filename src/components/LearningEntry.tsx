@@ -11,7 +11,7 @@ function LearningEntry({ entry }: LearningEntryProps) {
       <p>Date: {entry.date}</p>
       <p>{entry.learned}</p>
       <p>Confidence: {entry.confidence} / 5</p>
-      <p>Category: {entry.category}</p>
+      <p>Study Method: {entry.study_method}</p>
     </article>
   );
 }
