@@ -30,3 +30,13 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+
+# Application Structure
+# HomePage displays general information about the application.
+# EntriesPage loads and displays learning entries.
+# LearningEntry is a reusable component used to show one learning entry.
+# React displays the user interface and handles navigation. Express provides API endpoints and communicates with the database. MariaDB stores learning entries permanently.
+
+# The route /entries is a frontend route that shows a page. GET /api/entries is a backend API route that returns JSON data.
+
+# REST is a good choice because the application has simple resources and standard operations such as GET and POST.
