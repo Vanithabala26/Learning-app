@@ -1,50 +1,47 @@
+
 import { useEffect, useState } from "react";
 import LearningEntry from "../components/LearningEntry";
-import type { LearningEntryData } from "../types/LearningEntryData";
+import { useLearningStore } from "../store/useLearningStore";
+import { loadEntries } from "../api/entries";
+import LearningEntryForm from "../components/LearningEntryForm";
 
 export default function EntriesPage() {
-  const [entries, setEntries] = useState<LearningEntryData[]>([]);
+  const entries = useLearningStore((state) => state.entries);
+
+  const [loadError, setLoadError] = useState("");
+
+  const handleLoadEntries = async () => {
+    try {
+      setLoadError("");
+      await loadEntries();
+    } catch (error) {
+      console.error(error);
+      setLoadError("Failed to load entries from backend.");
+    }
+  };
 
   useEffect(() => {
-    let ignore = false;
-
-    async function loadEntries() {
-      try {
-        const response = await fetch(
-          "http://localhost:3001/api/entries"
-        );
-
-        const data: LearningEntryData[] =
-          await response.json();
-
-        if (!ignore) {
-          setEntries(data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    loadEntries();
-
-    return () => {
-      ignore = true;
-    };
+    handleLoadEntries();
   }, []);
 
   return (
     <main>
       <h1>Learning Entries</h1>
 
+      <LearningEntryForm />
+
+      <button type="button" onClick={handleLoadEntries}>
+        Load from backend
+      </button>
+
+      {loadError && <p>{loadError}</p>}
+
       {entries.length === 0 ? (
         <p>No entries found.</p>
       ) : (
         <>
           {entries.map((entry) => (
-            <LearningEntry
-              key={entry.id}
-              entry={entry}
-            />
+            <LearningEntry key={entry.id} entry={entry} />
           ))}
         </>
       )}
