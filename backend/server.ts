@@ -3,6 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import mysql from "mysql2/promise";
 import type { RowDataPacket, ResultSetHeader } from "mysql2";
+import { isValidConfidence } from "./validation.js";
 
 
  export type LearningEntryData = {
@@ -14,6 +15,7 @@ import type { RowDataPacket, ResultSetHeader } from "mysql2";
   study_method: string;
   // Add your own property from Flip 2 here.
 };
+
 
 const app = express();
 app.use(cors());
@@ -28,6 +30,8 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   dateStrings: true,
 });
+
+
 
 
 app.get("/api/entries", async (req, res) => {
@@ -70,9 +74,7 @@ app.post("/api/entries", async (req, res) => {
     !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
     typeof learned !== "string" ||
     !learned.trim() ||
-    !Number.isInteger(confidence) ||
-    confidence < 1 ||
-    confidence > 5 ||
+   !isValidConfidence(confidence) ||
     typeof study_method !== "string" ||
     !study_method.trim()
   ) {
@@ -115,6 +117,10 @@ app.post("/api/entries", async (req, res) => {
       error: "Could not save entry",
     });
   }
+});
+
+app.get("/", (req, res) => {
+  res.send("Backend is running");
 });
 
 

@@ -9,53 +9,60 @@ export default function LearningEntryForm() {
   const [studyMethod, setStudyMethod] = useState("");
   const [message, setMessage] = useState("");
 
-  async function handleSave() {
-    setMessage("");
+async function handleSave() {
+  setMessage("");
 
-    const newEntry = {
-      topic,
-      date,
-      learned,
-      confidence,
-      study_method: studyMethod,
-    };
+  const newEntry = {
+    topic,
+    date,
+    learned,
+    confidence,
+    study_method: studyMethod,
+  };
 
-    try {
-      const response = await fetch(
-        "http://localhost:3001/api/entries",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newEntry),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Could not save entry");
+  try {
+    const response = await fetch(
+      "http://localhost:3001/api/entries",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newEntry),
       }
-    } catch {
-      setMessage("Saving failed. Please try again.");
+    );
+
+    if (!response.ok) {
+      setMessage(
+        response.status === 400
+          ? "Could not save the entry. Check your input."
+          : "The server could not save the entry. Please try again."
+      );
       return;
     }
-
-    try {
-      await loadEntries();
-
-      setTopic("");
-      setDate("");
-      setLearned("");
-      setConfidence(3);
-      setStudyMethod("");
-
-      setMessage("Entry saved successfully.");
-    } catch {
-      setMessage(
-        "Entry was saved, but the list could not be refreshed."
-      );
-    }
+  } catch {
+    setMessage(
+      "Could not confirm the save. Check the connection and reload the list before trying again."
+    );
+    return;
   }
+
+  try {
+    await loadEntries();
+
+    setMessage("Entry saved successfully.");
+
+    setTopic("");
+    setDate("");
+    setLearned("");
+    setConfidence(3);
+    setStudyMethod("");
+  } catch {
+    setMessage(
+      "Entry was saved, but the list could not be refreshed."
+    );
+  }
+}
 
   return (
     <section>
